@@ -6,10 +6,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-concurrency:
-  group: e2e-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   cucumber:
     name: Cucumber BDD - ${{ matrix.env }}
@@ -34,24 +30,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "20"
           cache: "npm"
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Wait for API
-        run: |
-          for i in $(seq 1 30); do
-            if curl -sf http://localhost:3000/${{ matrix.env }}/users > /dev/null; then
-              echo "API is ready"
-              exit 0
-            fi
-            echo "Waiting... ($i/30)"
-            sleep 2
-          done
-          echo "API failed to start"
-          exit 1
 
       - name: Run tests (${{ matrix.env }})
         env:
