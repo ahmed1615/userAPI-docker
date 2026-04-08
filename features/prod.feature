@@ -27,12 +27,12 @@ Feature: User Management API — Prod Environment
     And the response body should have name "Jane Doe"
     And the response body should have age 30
 
-  Scenario: POST with age at lower boundary (1)
+  Scenario: POST with age at lower boundary
     When I create a user in "prod" with name "Young" and age 1
     Then the response status should be 201
     And the response body should have age 1
 
-  Scenario: POST with age at upper boundary (150)
+  Scenario: POST with age at upper boundary
     When I create a user in "prod" with name "Elder" and age 150
     Then the response status should be 201
     And the response body should have age 150
