@@ -39,7 +39,7 @@ jobs:
       - name: Run tests (${{ matrix.env }})
         env:
           BASE_URL: http://localhost:3000
-          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN || 'mysecrettoken' }}
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
         run: npm run test:${{ matrix.env }}
 
       - name: Upload report (${{ matrix.env }})
