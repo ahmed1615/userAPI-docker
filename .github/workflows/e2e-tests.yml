@@ -8,7 +8,7 @@ on:
 
 jobs:
   cucumber-dev:
-    name: Cucumber BDD — dev
+    name: Cucumber BDD - dev
     runs-on: ubuntu-latest
 
     services:
@@ -25,38 +25,39 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Wait for API to be ready
+      - name: Wait for API
         run: |
           for i in $(seq 1 30); do
-            if curl -sf http://localhost:3000/dev/users > /dev/null 2>&1; then
+            if curl -sf http://localhost:3000/dev/users > /dev/null; then
               echo "API is ready"
-              break
+              exit 0
             fi
-            echo "Waiting for API... ($i/30)"
+            echo "Waiting... ($i/30)"
             sleep 2
           done
+          echo "API failed"
+          exit 1
 
-      - name: Run dev Cucumber tests
+      - name: Run tests (dev)
         env:
           BASE_URL: http://localhost:3000
           AUTH_TOKEN: mysecrettoken
         run: npm run test:dev
 
-      - name: Upload dev Cucumber reports
+      - name: Upload report (dev)
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cucumber-reports-dev
-          path: |
-            reports/cucumber-report.html
-            reports/cucumber-report.json
+          name: report-dev
+          path: reports/
 
   cucumber-prod:
-    name: Cucumber BDD — prod
+    name: Cucumber BDD - prod
     runs-on: ubuntu-latest
 
     services:
@@ -73,32 +74,33 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Wait for API to be ready
+      - name: Wait for API
         run: |
           for i in $(seq 1 30); do
-            if curl -sf http://localhost:3000/prod/users > /dev/null 2>&1; then
+            if curl -sf http://localhost:3000/prod/users > /dev/null; then
               echo "API is ready"
-              break
+              exit 0
             fi
-            echo "Waiting for API... ($i/30)"
+            echo "Waiting... ($i/30)"
             sleep 2
           done
+          echo "API failed"
+          exit 1
 
-      - name: Run prod Cucumber tests
+      - name: Run tests (prod)
         env:
           BASE_URL: http://localhost:3000
           AUTH_TOKEN: mysecrettoken
         run: npm run test:prod
 
-      - name: Upload prod Cucumber reports
+      - name: Upload report (prod)
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cucumber-reports-prod
-          path: |
-            reports/cucumber-report.html
-            reports/cucumber-report.json
+          name: report-prod
+          path: reports/
