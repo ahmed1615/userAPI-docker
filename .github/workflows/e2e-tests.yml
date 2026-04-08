@@ -6,16 +6,31 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  cucumber-dev:
-    name: Cucumber BDD - dev
+  cucumber:
+    name: Cucumber BDD - ${{ matrix.env }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [dev, prod]
 
     services:
       api:
         image: ghcr.io/danielsilva-loanpro/sdet-interview-challenge:latest
         ports:
           - 3000:3000
+        options: >-
+          --health-cmd "curl -sf http://localhost:3000/${{ matrix.env }}/users || exit 1"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 15
 
     steps:
       - name: Checkout code
@@ -30,77 +45,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Wait for API
-        run: |
-          for i in $(seq 1 30); do
-            if curl -sf http://localhost:3000/dev/users > /dev/null; then
-              echo "API is ready"
-              exit 0
-            fi
-            echo "Waiting... ($i/30)"
-            sleep 2
-          done
-          echo "API failed"
-          exit 1
-
-      - name: Run tests (dev)
+      - name: Run tests (${{ matrix.env }})
         env:
           BASE_URL: http://localhost:3000
-          AUTH_TOKEN: mysecrettoken
-        run: npm run test:dev
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN || 'mysecrettoken' }}
+        run: npm run test:${{ matrix.env }}
 
-      - name: Upload report (dev)
+      - name: Upload report (${{ matrix.env }})
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: report-dev
+          name: report-${{ matrix.env }}
           path: reports/
-
-  cucumber-prod:
-    name: Cucumber BDD - prod
-    runs-on: ubuntu-latest
-
-    services:
-      api:
-        image: ghcr.io/danielsilva-loanpro/sdet-interview-challenge:latest
-        ports:
-          - 3000:3000
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Wait for API
-        run: |
-          for i in $(seq 1 30); do
-            if curl -sf http://localhost:3000/prod/users > /dev/null; then
-              echo "API is ready"
-              exit 0
-            fi
-            echo "Waiting... ($i/30)"
-            sleep 2
-          done
-          echo "API failed"
-          exit 1
-
-      - name: Run tests (prod)
-        env:
-          BASE_URL: http://localhost:3000
-          AUTH_TOKEN: mysecrettoken
-        run: npm run test:prod
-
-      - name: Upload report (prod)
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: report-prod
-          path: reports/
+          retention-days: 14

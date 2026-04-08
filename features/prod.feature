@@ -20,7 +20,6 @@ Feature: User Management API — Prod Environment
     And each user should have "name" as a string
     And each user should have "email" as a string
     And each user should have "age" as a number
-  # ─── POST /prod/users ────────────────────────────────────
 
   Scenario: POST creates user with valid data
     When I create a user in "prod" with name "Jane Doe" and age 30

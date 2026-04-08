@@ -111,7 +111,6 @@ Feature: User Management API — Dev Environment
   Scenario: PUT nonexistent user returns 404
     When I update a nonexistent user in "dev" with name "Ghost" and age 25
     Then the response status should be 404
-  # ─── DELETE /dev/users/{email} ───────────────────────────
 
   Scenario: DELETE with valid auth returns 204
     Given I create a user in "dev" with name "Delete Me" and age 25
