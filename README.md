@@ -57,39 +57,35 @@ AUTH_TOKEN=mysecrettoken
 
 ## Running Tests
 
-### Run Cucumber BDD tests (all environments)
-```bash
-npm run test:cucumber
-```
-
-### Run Cucumber tests for a specific environment
-```bash
-npm run test:cucumber:dev
-npm run test:cucumber:prod
-```
-
-### Run Playwright tests
+### Run all tests (dev + prod)
 ```bash
 npm test
 ```
 
-### Run Playwright tests for a specific environment
+### Run tests for a specific environment
 ```bash
 npm run test:dev
 npm run test:prod
 ```
 
-### View Playwright HTML report
+### Run tests and open HTML report
+```bash
+npm run test:report
+npm run test:report:dev
+npm run test:report:prod
+```
+
+### View HTML report only
 ```bash
 npm run report
 ```
 
 ## CI/CD Pipeline
 The GitHub Actions workflow (`.github/workflows/e2e-tests.yml`) runs:
-- **playwright-dev**: E2E suite against the `dev` environment
-- **playwright-prod**: E2E suite against the `prod` environment
+- **cucumber-dev**: BDD suite against the `dev` environment
+- **cucumber-prod**: BDD suite against the `prod` environment
 
-Both jobs run **in parallel** so neither blocks the other if tests fail. Test reports are uploaded as artifacts.
+Both jobs run **in parallel** and are triggered on pushes to `main`, all pull requests, and manual dispatch. Test reports are uploaded as artifacts.
 
 ## Bugs Found
 See [BUGS.md](BUGS.md) for a detailed bug report with 5 identified issues.
