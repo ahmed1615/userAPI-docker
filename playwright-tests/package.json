@@ -1,0 +1,19 @@
+{
+  "name": "user-management-api-e2e",
+  "version": "1.0.0",
+  "description": "Playwright & Cucumber BDD E2E tests for User Management API",
+  "scripts": {
+    "test": "cucumber-js --config cucumber.js",
+    "test:dev": "cucumber-js --config cucumber.js --tags '@dev'",
+    "test:prod": "cucumber-js --config cucumber.js --tags '@prod'",
+    "test:report": "cucumber-js --config cucumber.js; open reports/cucumber-report.html",
+    "test:report:dev": "cucumber-js --config cucumber.js --tags '@dev'; open reports/cucumber-report.html",
+    "test:report:prod": "cucumber-js --config cucumber.js --tags '@prod'; open reports/cucumber-report.html",
+    "report": "open reports/cucumber-report.html"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^11.0.0",
+    "@playwright/test": "^1.49.0",
+    "dotenv": "^17.4.1"
+  }
+}
